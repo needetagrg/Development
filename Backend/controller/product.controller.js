@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 
 //CREATE PRODUCT
 const createProduct = asyncHandler(async (req, res) => {
+
   const newProduct = await Product(req.body);
   const product = newProduct.save();
 
@@ -81,6 +82,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
     });
   } else {
     products = await Product.find().sort({ createdAt: -1 });
+    res.status(200).json(products);
   }
 });
 
