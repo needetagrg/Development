@@ -4,8 +4,11 @@ import Cart from "./page/cart";
 import Myaccount from "./page/myAccount";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import Product from "./page/Product";
 import { RouterProvider, createBrowserRouter, Outlet } from "react-router-dom";
 import Noticebar from "./components/Noticebar";
+import Login from "./page/Login";
+import Register from "./page/Register";
 
 function App() {
   const Layout = () => {
@@ -33,8 +36,20 @@ function App() {
           element: <Cart />
         },
         {
+          path: "/login",
+          element: <Login />
+        },
+        {
+          path: "/register",
+          element: <Register />
+        },
+        {
           path: "/myaccount",
           element: <Myaccount />
+        },
+        {
+          path: "/product/:productId",
+          element: <Product />
         }
         
       ]

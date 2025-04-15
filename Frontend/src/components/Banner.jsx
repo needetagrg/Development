@@ -2,7 +2,7 @@ const Banner = () => {
     return (
       <div
         className="relative h-[80vh] bg-cover bg-center"
-        style={{ backgroundImage: "url('/cover2.jpg')" }}
+        style={{ backgroundImage: "url('/cover3.jpg')" }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-20"></div>
   
