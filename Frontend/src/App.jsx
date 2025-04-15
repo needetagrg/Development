@@ -9,6 +9,9 @@ import { RouterProvider, createBrowserRouter, Outlet } from "react-router-dom";
 import Noticebar from "./components/Noticebar";
 import Login from "./page/Login";
 import Register from "./page/Register";
+import ProductList from "./page/ProductList";
+import Order from "./page/Order";
+
 
 function App() {
   const Layout = () => {
@@ -50,6 +53,14 @@ function App() {
         {
           path: "/product/:productId",
           element: <Product />
+        },
+        {
+          path: "/products/:searchterm",
+          element: <ProductList />
+        },
+        {
+          path: "/myorders",
+          element: <Order />
         }
         
       ]
