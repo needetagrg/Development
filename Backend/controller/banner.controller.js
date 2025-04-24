@@ -37,17 +37,23 @@ const getAllBanners = asyncHandler(async (req, res) => {
   }
 });
 
+
+
 //GET A BANNER
 const getBanner = asyncHandler(async (req, res) => {
-  const banners = await Banner.findById(req.params.id);
-  if (!banners) {
+  const banners = await Banner.find();
+  if (!banners || banners.length === 0) {
     res.status(400);
-    throw new Error("Banner not found");
+    throw new Error("No banners found");
   } else {
     const randomIndex = Math.floor(Math.random() * banners.length);
     const randomBanner = banners[randomIndex];
     res.status(200).json(randomBanner);
   }
 });
+
+
+
+
 
 export { createBanner, deleteBanner, getAllBanners, getBanner };

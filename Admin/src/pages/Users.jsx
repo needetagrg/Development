@@ -1,44 +1,11 @@
 import { DataGrid } from "@mui/x-data-grid";
 import { FaTrash } from "react-icons/fa";
+import { useEffect } from "react";
+import { useState } from "react";
+import {UserRequest } from "../requestMethods"
 
 const Users = () => {
-    const data = [
-        {
-          id: 1,
-          name: "Sabin Shrestha",
-          email: "sabin.shrestha@example.com",
-          phoneNumber: "+977 9841-123456",
-          role: "Admin",
-        },
-        {
-          id: 2,
-          name: "Rina Tamang",
-          email: "rina.tamang@example.com",
-          phoneNumber: "+977 9813-987654",
-          role: "User",
-        },
-        {
-          id: 3,
-          name: "Kiran Magar",
-          email: "kiran.magar@example.com",
-          phoneNumber: "+977 9851-456789",
-          role: "Editor",
-        },
-        {
-          id: 4,
-          name: "Anita Khadka",
-          email: "anita.khadka@example.com",
-          phoneNumber: "+977 9860-789012",
-          role: "User",
-        },
-        {
-          id: 5,
-          name: "Ramesh Dahal",
-          email: "ramesh.dahal@example.com",
-          phoneNumber: "+977 9823-234567",
-          role: "User",
-        },
-    ];
+   
 
   const columns = [
     { field: "id", headerName: "ID", width: 70 },
@@ -60,6 +27,22 @@ const Users = () => {
     },
   ];
 
+  const [users,setUsers] = useState([]);
+
+  useEffect(() => {
+    
+    const getUsers = async() => {
+      try{
+        const res = await UserRequest.get("/users");
+        setUsers(res.data)
+      }catch(error){
+        console.log(error)
+      }
+    }
+
+    getUsers();
+  },[])
+
   return (
     <div className="p-5 w-[70vw]">
       <div className="flex items-center justify-between m-[30px]">
@@ -67,9 +50,9 @@ const Users = () => {
       </div>
       <div className="m-[30px] h-[400px]">
         <DataGrid
-          rows={data}
+          rows={users}
           columns={columns}
-          getRowId={(row) => row.id}
+          getRowId={(row) => row._id}
            
           checkboxSelection
           

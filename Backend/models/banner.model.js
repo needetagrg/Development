@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const bannerSchema = mongoose.Schema(
   {
-    tittle: {
+    title: {
       type: String,
       require: true,
     },
@@ -9,7 +9,7 @@ const bannerSchema = mongoose.Schema(
       type: String,
       require: true,
     },
-    image: {
+    img: {
       type: String,
       require: true,
     },

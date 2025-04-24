@@ -17,7 +17,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
 //UPDATE PRODUCT
 const updateProduct = asyncHandler(async (req, res) => {
-  const updatedProduct = await Product.findbyIdAndUpdate(
+  const updatedProduct = await Product.findByIdAndUpdate(
     req.params.id,
     {
       $set: req.body,
@@ -35,7 +35,7 @@ const updateProduct = asyncHandler(async (req, res) => {
 
 //DELETE PRODUCT
 const deleteProduct = asyncHandler(async (req, res) => {
-  const product = await Product.findbyIdAndDelete(req.params.id);
+  const product = await Product.findByIdAndDelete(req.params.id);
   if (!product) {
     res.status(400);
     throw new Error("Product was not deleted");
@@ -46,10 +46,10 @@ const deleteProduct = asyncHandler(async (req, res) => {
 
 //GET PRODUCT
 const getProduct = asyncHandler(async (req, res) => {
-  const product = await Product.findbyId(req.params.id);
+  const product = await Product.findById(req.params.id);
 
   if (!product) {
-    res.status(400);
+    res.status(404);
     throw new Error("Product not found");
   } else {
     res.status(200).json(product);
@@ -67,23 +67,21 @@ const getAllProducts = asyncHandler(async (req, res) => {
   if (qNew) {
     products = await Product.find().sort({ createdAt: -1 });
   } else if (qCategory) {
-    products = await Product.find({
-      categories: {
-        $in: [qCategory],
-      },
-    });
+    products = await Product.find({categories: { $in: [qCategory], },
+ });
   } else if (qsearch) {
     products = await Product.find({
       $text: {
         $search: qsearch,
         $caseSensitive: false,
-        $dicriticSensitive: false,
+        $diacriticSensitive: false,
       },
     });
   } else {
     products = await Product.find().sort({ createdAt: -1 });
-    res.status(200).json(products);
+   
   }
+  res.status(200).json(products);
 });
 
 //RATING PRODUCT
@@ -91,7 +89,7 @@ const ratingProduct = asyncHandler(async (req, res) => {
   const { star, name, comment, postedBy } = req.body;
 
   if (star && name && comment && postedBy) {
-    const postedBy = await Product.findbyIdAndUpdate(
+    const postedBy = await Product.findByIdAndUpdate(
       req.params.id,
 
       {

@@ -1,15 +1,58 @@
 import { LineChart } from "@mui/x-charts";
+import { useEffect, useState } from "react";
 import { FaUpload } from "react-icons/fa";
+import { Link, useLocation } from "react-router-dom";
+import { UserRequest } from "../requestMethods";
 
 const Product = () => {
+  const location = useLocation();
+  const id = location.pathname.split("/")[2];
+  const [inputs, setInputs] = useState({});
+
+
+  const [product, setProduct] = useState({});
+
+  useEffect(() => {
+    const getProduct = async () => {
+      try {
+        const res = await UserRequest.get("/products/find/" + id);
+        setProduct(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getProduct();
+  }, []);
+
+  const handleChange = (e) => {
+    setInputs((prev) => {
+      return { ...prev, [e.target.name]: e.target.value };
+    });
+  };
+
+  const handleUpdate = async () => {
+    try {
+      await UserRequest.put(`/products/${id}`, { ...inputs });
+      console.log("product updated")
+    } catch (error) {
+      console.log(error);
+      console.log("product update failed")
+
+    }
+  };
+
+
   return (
     <div className="p-5 w-[70vw]">
       {/* FIRSTPART */}
       <div className="flex items-center justify-between  text-black mb-5">
         <h3 className="text-3xl font-semibold">Product</h3>
-        <button className="bg-black text-white py-2 px-4 rounded">
-          Create
-        </button>
+        <Link to="/addproduct">
+          <button className="bg-[#1e1e1e] p-[10px] font-semibold text-white cursor-pointer rounded">
+            Create
+          </button>
+        </Link>
       </div>
 
       {/* SECONDPART */}
@@ -31,9 +74,9 @@ const Product = () => {
         </div>
 
         {/* PRODUCTCART */}
-        <div className="flex-1 bg-white p-5 shadow-lg rounded-lg">
+        <div className="flex-1 bg-white text-black p-5 shadow-lg rounded-lg">
           <div className="flex items-center mb-5">
-            <img src="/image.png " alt="" className="h-20 w-20 rounded-full" />
+            <img src={product.img} alt="" className="h-20 w-20 rounded-full" />
             <span className=" text-2xl text-black font-semibold ml-[20px]">
               Glow Recipe: Avocado Ceramide Recovery Serum
             </span>
@@ -41,11 +84,11 @@ const Product = () => {
           <div className="space-y-3 text-black">
             <div className="flex justify-between">
               <span className="font-semibold">ID:</span>
-              <span>114</span>
+              <span>{product._id}</span>
             </div>
             <div className="flex justify-between">
               <span className="font-semibold">Sales:</span>
-              <span>13</span>
+              <span>{product._id}</span>
             </div>
             <div className="flex justify-between">
               <span className="font-semibold">In stock:</span>
@@ -66,8 +109,10 @@ const Product = () => {
               </label>
               <input
                 type="text"
-                placeholder=""
+                name="title"
+                placeholder={product.title}
                 className="w-full p-2 text-gray-600 bg-white border border-gray-300 rounded"
+                onChange={handleChange}
               />
             </div>
             <div>
@@ -76,8 +121,10 @@ const Product = () => {
               </label>
               <input
                 type="text"
-                placeholder=""
+                name="desc"
+                placeholder={product.desc}
                 className="w-full p-2 text-gray-600 bg-white border border-gray-300 rounded"
+                onChange={handleChange}
               />
             </div>
             <div>
@@ -86,8 +133,10 @@ const Product = () => {
               </label>
               <input
                 type="number"
-                placeholder=""
+                name="originalPrice"
+                placeholder={product.originalPrice}
                 className="w-full p-2 text-gray-600 bg-white border border-gray-300 rounded"
+                onChange={handleChange}
               />
             </div>
             <div>
@@ -96,8 +145,10 @@ const Product = () => {
               </label>
               <input
                 type="number"
-                placeholder=""
+                name="discountedPrice"
+                placeholder={product.discountedPrice}
                 className="w-full p-2 text-gray-600 bg-white border border-gray-300 rounded"
+                onChange={handleChange}
               />
             </div>
             <div>
@@ -115,7 +166,7 @@ const Product = () => {
           <div className="flex-1 flex flex-col items-center space-y-8">
             <div className="flex flex-col items-center">
               <img
-                src="/image.png "
+                src={product.img}
                 alt=""
                 className="h-40 w-40 rounded-full"
               />
@@ -124,7 +175,7 @@ const Product = () => {
                 <FaUpload className="text-black text-2xl " />
               </label>
 
-              <button className="bg-black py-2 px-4 text-white rounded m-5">
+              <button className="bg-black py-2 px-4 text-white rounded m-5" onClick={handleUpdate}>
                 Update
               </button>
             </div>

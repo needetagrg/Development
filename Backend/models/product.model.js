@@ -4,15 +4,15 @@ const productSchema = mongoose.Schema(
   {
     title: {
       type: String,
-      require: true,
+      required: true,
     },
-    description: {
+    desc: {
       type: String,
-      require: true,
+      required: true,
     },
-    image: {
+    img: {
       type: String,
-      require: true,
+      required: true,
     },
     video: {
       type: String,
@@ -35,14 +35,14 @@ const productSchema = mongoose.Schema(
     brand: {
       type: String,
     },
-    skinType: {
+    skintype: {
       type: Array,
     },
     originalPrice: {
       type: Number,
     },
     discount: {
-      type: Number,
+      // type: Number,
     },
     stock: {
       type: Boolean,
