@@ -1,11 +1,47 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { UserRequest } from "../requestMethods";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    try {
+      await UserRequest.post("/auth/register", { name, email, password });
+      navigate("/login");
+    } catch (error) {
+      if (error.response && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-white flex items-center justify-center py-10">
-      <div className="flex bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-white flex items-center justify-center py-6">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+
+      <div className="flex bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl w-full">
         {/* Image Section */}
-        <div className="h-[600px] w-[480px]">
+        <div className="h-[500px] w-1/2">
           <img
             src="/login2.jpg"
             alt="Register"
@@ -14,16 +50,16 @@ const Register = () => {
         </div>
 
         {/* Form Section */}
-        <div className="p-8 w-[480px]">
-          <h2 className="text-2xl font-bold text-black mb-6">
+        <div className="p-6 w-1/2">
+          <h2 className="text-2xl font-bold text-black mb-4">
             Register with LuminSkin
           </h2>
-          <form className="space-y-5">
+          <form className="space-y-4">
             {/* Name Field */}
             <div>
               <label
                 htmlFor="name"
-                className="block text-black text-opacity-75 text-sm font-medium mb-1"
+                className="block text-black text-opacity-75 text-sm font-medium mb-2"
               >
                 Full Name
               </label>
@@ -32,6 +68,7 @@ const Register = () => {
                 id="name"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d1d5db]"
                 placeholder="Enter your full name"
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
 
@@ -39,7 +76,7 @@ const Register = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-black text-opacity-75 text-sm font-medium mb-1"
+                className="block text-black text-opacity-75 text-sm font-medium mb-2"
               >
                 Email
               </label>
@@ -48,6 +85,7 @@ const Register = () => {
                 id="email"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d1d5db]"
                 placeholder="Enter your email"
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -55,7 +93,7 @@ const Register = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-black text-opacity-75 text-sm font-medium mb-1"
+                className="block text-black text-opacity-75 text-sm font-medium mb-2"
               >
                 Password
               </label>
@@ -64,29 +102,15 @@ const Register = () => {
                 id="password"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d1d5db]"
                 placeholder="Enter your password"
-              />
-            </div>
-
-            {/* Confirm Password Field */}
-            <div>
-              <label
-                htmlFor="confirm-password"
-                className="block text-black text-opacity-75 text-sm font-medium mb-1"
-              >
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                id="confirm-password"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d1d5db]"
-                placeholder="Confirm your password"
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-[#d1d5db] text-white py-3 rounded-md font-semibold hover:bg-gray-400 transition duration-300"
+              className="w-full bg-[#d1d5db] text-white py-2 rounded-md font-semibold hover:bg-gray-400 transition duration-300"
+              onClick={handleRegister}
             >
               Register
             </button>

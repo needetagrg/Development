@@ -1,33 +1,29 @@
-import StarRatings from "react-star-ratings";
+import { showAverageRating } from "./Ratings";
 
-const Product = ({img}) => {
+const Product = ({ product }) => {
   return (
-    <div  className="flex flex-wrap mx-[30px]">
-       <div className="flex flex-col items-center justify-center h-[450px] m-[2px] cursor-pointer">
+    <div className="flex justify-center">
+      <div className="flex flex-col items-center bg-white p-4 m-5 rounded-lg shadow-md w-[300px] h-[470px] cursor-pointer ">
         <img
-          src={img}
-          alt="product1"
-          className="h-[300px] w-[300px] object-cover rounded-lg"
+          src={product.img}
+          alt="product"
+          className="h-[250px] w-[250px] object-cover rounded-md"
         />
-        <h3 className="font-semibold text-[16px] w-[300px] text-center mt-2">
-          Serum
+        <h3 className="font-semibold text-[15px] text-center mt-3 text-gray-500">
+          {product.categories}
         </h3>
-        <h2 className="font-semibold text-[18px] w-[300px] text-center mt-1">
-          Holy Hyssop Serum 120ml
+        <h2 className="font-semibold text-[17px] text-center mt-1">
+          {product.title}
         </h2>
-        <span className="text-[18px] font-semibold w-[300px] text-center mt-1">
-          NPR 2,800
+        <span className="text-[17px] font-semibold text-center mt-1 text-gray-700">
+          NPR {product.originalPrice}
         </span>
-        <StarRatings
-          rating={2.403}
-          starRatedColor="orange"
-          starDimension="25px"
-          starSpacing="5px"
-        />
-        <span>(3)</span>
+        <div className="mt-2">
+          {showAverageRating(product)}
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Product
+export default Product;

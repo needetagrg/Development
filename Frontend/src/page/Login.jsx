@@ -1,8 +1,53 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import { login } from "../redux/apiCalls";
+import { useDispatch, useSelector } from 'react-redux';
+import "react-toastify/dist/ReactToastify.css";
+import { useState } from "react";
+
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+
+      login(dispatch, { email, password });
+
+      console.log(user.currentUser)
+
+      setLoading(false);
+      navigate("/");
+    } catch {
+      if (error.response && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-white flex items-center justify-center py-10">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+
       <div className="flex bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl">
         {/* Image Section */}
         <div className="h-[500px] w-[480px]">
@@ -32,6 +77,7 @@ const Login = () => {
                 id="email"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d1d5db]"
                 placeholder="Enter your email"
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -48,6 +94,7 @@ const Login = () => {
                 id="password"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#d1d5db]"
                 placeholder="Enter your password"
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
@@ -65,8 +112,9 @@ const Login = () => {
             <button
               type="submit"
               className="w-full bg-gray-400 text-white py-3 rounded-md font-semibold hover:bg-gray-500 transition duration-300"
+              onClick={handleLogin}
             >
-              Login
+              {loading ? "loading..." : "Login"}
             </button>
           </form>
 

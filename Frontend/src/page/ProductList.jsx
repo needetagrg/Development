@@ -1,13 +1,28 @@
+import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import Products from "../components/Products";
 
 const ProductList = () => {
+  const location = useLocation();
+  const query = location.pathname.split("/")[2];
+  const [filters, setFilters] = useState({});
+  const [sort, setSort] = useState("newest");
+  const handleFilters = (e) => {
+    const value = e.target.value;
+    setFilters({
+      ...filters,
+      [e.target.name]: value,
+    });
+  }
+    
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="flex justify-between m-4">
         {/* LEFT */}
         <div className="flex flex-col sm:flex-row sm:items-center">
           <span className="text-lg font-semibold mr-4">Filter Products</span>
-          <select name="product" className="p-2 mb-4 sm:mb-0 sm:mr-4">
+          <select name="product" className="w-full p-2 m-4 text-gray-600 bg-white border border-gray-300 rounded" onChange={handleFilters}>
             <option value="">All Products</option>
             <option value="Cleanser">Cleanser</option>
             <option value="Facemask">Facemask</option>
@@ -18,7 +33,7 @@ const ProductList = () => {
             <option value="Sunscreen">Sunscreen</option>
           </select>
 
-          <select name="brand" className="p-2 mb-4 sm:mb-0 sm:mr-4">
+          <select name="brand" className="w-full p-2 m-4 text-gray-600 bg-white border border-gray-300 rounded" onChange={handleFilters}>
             <option value="">All Skin Types</option>
             <option value="Dry">Dry</option>
             <option value="Oily">Oily</option>
@@ -28,12 +43,25 @@ const ProductList = () => {
             <option value="Acne-Prone">Acne-Prone</option>
             <option value="Mature">Mature</option>
           </select>
+
+          <select
+            name="skinConcern" className="w-full p-2 m-4 text-gray-600 bg-white border border-gray-300 rounded" onChange={handleFilters}>
+            <option value="">
+               All Skin Concern
+            </option>
+            <option value="Acne">Acne</option>
+            <option value="Hyperpigmentation">Hyperpigmentation</option>
+            <option value="Aging">Aging</option>
+            <option value="Pore Size">Pore Size</option>
+            <option value="Uneven Texture">Uneven Texture</option>
+            <option value="Dark Circles">Dark Circles</option>
+          </select>
         </div>
 
         {/* RIGHT */}
         <div className="flex flex-col sm:flex-row sm:items-center">
           <span className="text-lg font-semibold mr-4">Sort Products</span>
-          <select name="Price" className="p-2 mb-4 sm:mb-0 sm:mr-4">
+          <select name="price" className="w-full p-2 text-gray-600 bg-white border border-gray-300 rounded" onChange={(e) => setSort(e.target.value)}>
             <option value="newest">Newest Arrivals</option>
             <option value="price-asc">Price (asc)</option>
             <option value="price-desc">Price (desc)</option>
@@ -43,7 +71,7 @@ const ProductList = () => {
           </select>
         </div>
       </div>
-      <Products />
+      <Products query={query} filters={filters} sort={sort}/>
     </div>
   );
 };

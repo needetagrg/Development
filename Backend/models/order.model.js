@@ -1,21 +1,22 @@
 import mongoose from "mongoose";
+
 const orderSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      require: true,
+      required: true,
     },
     userId: {
       type: String,
-      require: true,
+      required: true,
     },
     products: {
       type: Array,
-      require: true,
+      required: true,
     },
     total: {
       type: Number,
-      require: true,
+      required: true,
     },
     address: {
       type: String,
@@ -28,7 +29,21 @@ const orderSchema = mongoose.Schema(
     },
     status: {
       type: Number,
-      default: 0,
+      default: 0, // 0: Pending, 1: Processing, 2: Delivered, 3: Completed, 4: Cancelled
+    },
+    paymentMethod: {
+      type: String,
+      default: "eSewa", // Set default to eSewa since that's our focus
+    },
+    transactionId: {
+      type: String, // eSewa transaction ID
+    },
+    isPaid: {
+      type: Boolean,
+      default: false,
+    },
+    paidAt: {
+      type: Date,
     },
   },
   {

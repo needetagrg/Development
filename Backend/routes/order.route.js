@@ -1,12 +1,25 @@
-import express from "express";  
+import express from "express";
 const router = express.Router();
 
-import { createOrder, updateOrder, deleteOrder, getUserOrder, getAllOrders } from "../controller/order.contoller.js";
+import {
+  createOrder,
+  updateOrder,
+  deleteOrder,
+  getUserOrder,
+  getAllOrders,
+  initiateEsewaPayment,
+  verifyEsewaPayment,
+} from "../controller/order.contoller.js";
 import protect from "../Middleware/auth.middleware.js";
-
 
 //CREATE ORDER ROUTE
 router.post("/", createOrder);
+
+//INITIATE ESEWA PAYMENT ROUTE
+router.post("/initiate/esewa/payment", initiateEsewaPayment); 
+
+//VERIFY ESEWA PAYMENT ROUTE
+router.get("/verify/esewa/payment", verifyEsewaPayment); 
 
 //UPDATE ORDER ROUTE
 router.put("/:id", updateOrder);
@@ -15,9 +28,9 @@ router.put("/:id", updateOrder);
 router.delete("/:id", deleteOrder);
 
 //GET USER ORDERS ROUTE
-router.get("/find/:userId", getUserOrder);
+router.get("/find/:id", getUserOrder);
 
-//GET ALL ORDERS 
-router.get("/", protect, getAllOrders);
+//GET ALL ORDERS
+router.get("/", getAllOrders);
 
 export default router;
