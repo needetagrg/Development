@@ -2,6 +2,7 @@ import Order from "../models/order.model.js";
 import asyncHandler from "express-async-handler";
 import dotenv from "dotenv";
 import crypto from 'crypto';
+import axios from "axios";
 
 dotenv.config();
 
@@ -13,8 +14,8 @@ const createOrder = asyncHandler(async (req, res) => {
     email: req.body.email,
     products: req.body.cart.products,
     total: req.body.cart.total,
-    address: req.body.address, // You might need to send this from the frontend
-    phone: req.body.phone,     // You might need to send this from the frontend
+    address: req.body.address, 
+    phone: req.body.phone,     
   });
   const savedOrder = await newOrder.save();
   if (!savedOrder) {
@@ -34,7 +35,7 @@ const initiateEsewaPayment = asyncHandler(async (req, res) => {
     name,
     email,
     products: cart.products,
-    total: cart.total, // Include shipping
+    total: cart.total,
     paymentMethod: "eSewa",
     status: 0,
     address,
@@ -50,24 +51,19 @@ const initiateEsewaPayment = asyncHandler(async (req, res) => {
     throw new Error("Order creation failed during eSewa initiation");
   }
 
-  // 2. Setup payment details
-  const merchantId = "EPAYTEST"; // Use production key for live
-  const secretKey = "8gBm/:&EnhH.1/q"; // Use your actual secret key
+  // Setup payment details
+  const merchantId = "EPAYTEST"; 
+  const secretKey = "8gBm/:&EnhH.1/q"; 
   const amount = cart.total;
   const deliveryCharge = 200;
   const totalAmount = amount + deliveryCharge;
   const transactionUUID = savedOrder._id.toString();
-  const successUrl = `${req.protocol}://${req.get("host")}/api/v1/verify/esewa/payment`;
-  const failureUrl = `${req.protocol}://${req.get("host")}/order/failure`;
+  const successUrl = `${req.protocol}://${req.get("host")}/api/v1/orders/verify/esewa/payment`; 
+  const failureUrl = `http://localhost:5173/order/failure`;
 
-  // 3. Create payload to sign
-  const payloadToSign = {
-    total_amount: totalAmount.toFixed(2),
-    transaction_uuid: transactionUUID,
-    product_code: merchantId,
-  };
-
-  const signatureString = `${totalAmount.toFixed(2)},${transactionUUID},${merchantId}`;
+  // Create payload to sign
+  const signatureString = `total_amount=${totalAmount.toFixed(2)},transaction_uuid=${transactionUUID},product_code=${merchantId}`;
+  console.log('Signature String:', signatureString); // Debug log
 
   const signature = crypto
     .createHmac("sha256", secretKey)
@@ -76,9 +72,13 @@ const initiateEsewaPayment = asyncHandler(async (req, res) => {
 
   // 4. FormData to send to frontend
   const formData = {
+    amount: amount.toFixed(2), 
+    tax_amount: "0.00", 
     total_amount: totalAmount.toFixed(2),
     transaction_uuid: transactionUUID,
     product_code: merchantId,
+    product_service_charge: "0.00", // Add if required
+    product_delivery_charge: deliveryCharge.toFixed(2), 
     success_url: successUrl,
     failure_url: failureUrl,
     signed_field_names: "total_amount,transaction_uuid,product_code",
@@ -90,61 +90,84 @@ const initiateEsewaPayment = asyncHandler(async (req, res) => {
 });
 
 
-//VERIFY ESEWA PAYMENT
 const verifyEsewaPayment = asyncHandler(async (req, res) => {
-  const { oid, amt, refId } = req.query;
-  const merchantId = "EPAYTEST"; // Use your actual merchant ID in production
+  const { data } = req.query;
 
-  if (!oid || !amt || !refId) {
-    return res.status(400).send("Missing required verification parameters.");
+  if (!data) {
+    return res.status(400).send("Missing data parameter.");
   }
 
   try {
-    const verificationUrl = "https://uat.esewa.com.np/api/epay/transaction/status/";
-    const verificationPayload = {
-      transaction_uuid: oid,
-      product_code: merchantId,
-      total_amount: amt,
-    };
+    // Decode Base64-encoded data
+    const decodedData = JSON.parse(Buffer.from(data, "base64").toString("utf-8"));
+    const {
+      transaction_code,
+      status,
+      total_amount,
+      transaction_uuid,
+      product_code,
+    } = decodedData;
 
-    const response = await axios.post(verificationUrl, verificationPayload, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    // Verify required fields
+    if (!transaction_uuid || !total_amount || !transaction_code || !status || !product_code) {
+      return res.status(400).send("Invalid data parameters.");
+    }
 
-    const status = response?.data?.status;
+    // Normalize total_amount for validation
+    const normalizedTotalAmount = parseFloat(total_amount.replace(/,/g, "")).toFixed(2);
 
+    // Log for debugging
+    console.log("Decoded eSewa Data:", decodedData);
+    console.log("Normalized Total Amount:", normalizedTotalAmount);
+
+    // Validate total_amount against order
+    const order = await Order.findById(transaction_uuid);
+    if (!order) {
+      return res.status(404).send("Order not found.");
+    }
+    if (parseFloat(normalizedTotalAmount) !== order.total + 200) {
+      return res.status(400).send("Amount mismatch.");
+    }
+
+    // Frontend base URL from environment variable
+    const frontendBaseUrl = "http://localhost:5173";
+
+    // Check payment status
     if (status === "COMPLETE") {
-      const order = await Order.findByIdAndUpdate(
-        oid,
+      const updatedOrder = await Order.findByIdAndUpdate(
+        transaction_uuid,
         {
           isPaid: true,
           paidAt: new Date(),
-          transactionId: refId,
+          transactionId: transaction_code,
           status: 1,
         },
         { new: true }
       );
 
-      if (order) {
-        return res.redirect(`/order/success?orderId=${oid}`);
+      if (updatedOrder) {
+        console.log("Order Updated:", updatedOrder);
+        return res.redirect(`${frontendBaseUrl}/order?orderId=${transaction_uuid}`);
+
       } else {
         return res.status(404).send("Order not found.");
       }
     } else {
       await Order.findByIdAndUpdate(
-        oid,
+        transaction_uuid,
         { status: 4 },
         { new: true }
       );
-      return res.redirect(`/order/failure?orderId=${oid}`);
+      console.log("Payment Failed, Status:", status);
+      return res.redirect(`${frontendBaseUrl}/order/failure?orderId=${transaction_uuid}`);
     }
   } catch (error) {
-    console.error("Error verifying eSewa payment:", error.message);
-    return res.status(500).send("Verification failed. Please try again.");
+    console.error("Error verifying eSewa payment:", error.message, error.stack);
+    return res.status(500).send(`Verification failed: ${error.message}`);
   }
 });
+
+
 
 //UPDATE ORDER
 const updateOrder = asyncHandler(async (req, res) => {

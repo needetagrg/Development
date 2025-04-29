@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import Product from "./Product";
 import PropTypes from "prop-types";
-import { UserRequest } from "../requestMethods"
+import { UserRequest } from "../requestMethods";
 import { Link } from "react-router-dom";
 
 const Products = ({ filters, sort, query }) => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-
-  console.log(products)
 
   useEffect(() => {
     const getProducts = async () => {
@@ -19,39 +17,50 @@ const Products = ({ filters, sort, query }) => {
         } else {
           res = await UserRequest.get("/products");
         }
-
         setProducts(res.data);
       } catch (error) {
         console.log(error);
       }
     };
-
     getProducts();
   }, [query]);
 
   useEffect(() => {
     let tempProducts = [...products];
 
-    //apply filters
     if (filters) {
       tempProducts = tempProducts.filter((item) =>
         Object.entries(filters).every(([key, value]) => {
           if (!value) return true;
 
-          return item[key].includes(value);
+          if (key === "product") {
+            return item.categories.includes(value);
+          } else if (key === "brand") {
+            return item.brand.toLowerCase() === value.toLowerCase();
+          } else if (key === "skinConcern") {
+            return item.concern.includes(value);
+          } else if (key === "skintype") {
+            return item.skintype.includes(value); 
+          } else {
+            return true; 
+          }
         })
       );
     }
 
-    //apply sorting
+    // Apply sorting (remains the same)
     if (sort === "newest") {
-      tempProducts.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
-    } else if (sort === "asc") {
+      tempProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } else if (sort === "price-asc") {
       tempProducts.sort((a, b) => a.originalPrice - b.originalPrice);
-    } else if (sort === "desc") {
+    } else if (sort === "price-desc") {
       tempProducts.sort((a, b) => b.originalPrice - a.originalPrice);
+    } else if (sort === "name-asc") {
+      tempProducts.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sort === "name-desc") {
+      tempProducts.sort((a, b) => b.title.localeCompare(a.title));
+    } else if (sort === "best-selling") {
+      // Implement your logic for best-selling
     }
 
     setFilteredProducts(tempProducts);
@@ -59,13 +68,11 @@ const Products = ({ filters, sort, query }) => {
 
   return (
     <div className="flex flex-wrap mx-[40px]">
-      {filteredProducts.map((product, index) => (
-
-        <Link to={`/product/${product._id}`}>
+      {filteredProducts.map((product) => (
+        <Link to={`/product/${product._id}`} key={product._id}> {/* Added key prop */}
           <Product product={product} />
         </Link>
-      ))
-      }
+      ))}
     </div>
   );
 };

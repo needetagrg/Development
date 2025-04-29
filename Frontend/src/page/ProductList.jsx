@@ -14,7 +14,7 @@ const ProductList = () => {
       [e.target.name]: value,
     });
   }
-    
+
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -33,7 +33,11 @@ const ProductList = () => {
             <option value="Sunscreen">Sunscreen</option>
           </select>
 
-          <select name="brand" className="w-full p-2 m-4 text-gray-600 bg-white border border-gray-300 rounded" onChange={handleFilters}>
+          <select
+            name="skintype" // Changed name to "skintype"
+            className="w-full p-2 m-4 text-gray-600 bg-white border border-gray-300 rounded"
+            onChange={handleFilters}
+          >
             <option value="">All Skin Types</option>
             <option value="Dry">Dry</option>
             <option value="Oily">Oily</option>
@@ -45,9 +49,12 @@ const ProductList = () => {
           </select>
 
           <select
-            name="skinConcern" className="w-full p-2 m-4 text-gray-600 bg-white border border-gray-300 rounded" onChange={handleFilters}>
+            name="skinConcern"
+            className="w-full p-2 m-4 text-gray-600 bg-white border border-gray-300 rounded"
+            onChange={handleFilters}
+          >
             <option value="">
-               All Skin Concern
+              All Skin Concern
             </option>
             <option value="Acne">Acne</option>
             <option value="Hyperpigmentation">Hyperpigmentation</option>

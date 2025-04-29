@@ -74,6 +74,10 @@ function App() {
           element: user?.currentUser ? <Order /> : <Login />
         },
         {
+          path: "/order",
+          element: user?.currentUser ? <Order /> : <Login />
+        },
+        {
           path: "/skintypequiz",
           element: <QuizPage />
         },

@@ -1,11 +1,14 @@
 import { useDispatch, useSelector } from "react-redux";
 import { logOut } from "../redux/userRedux";
+import { clearCart } from "../redux/cartRedux";
 
-const myAccount = () => {
+const MyAccount = () => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const handleLogout = () =>{
     dispatch(logOut())
+    dispatch(clearCart())
+
   }
 
 
@@ -22,7 +25,6 @@ const myAccount = () => {
               {user.currentUser?.name}
             </p>
             <p className="text-gray-600">{user.currentUser?.email}</p>
-            <p className="text-gray-600">+1 (555) 123-4567</p>
           </div>
         </div>
 
@@ -54,26 +56,8 @@ const myAccount = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-gray-700 text-sm font-semibold">
-                Telephone
-              </label>
-              <input
-                type="text"
-                value="+1 (555) 123-4567"
-                className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 text-sm font-semibold">
-                Address
-              </label>
-              <input
-                type="text"
-                value="DownTown 123, Sydney"
-                className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+         
+
 
             <button
               type="submit"
@@ -138,4 +122,4 @@ const myAccount = () => {
   );
 };
 
-export default myAccount;
+export default MyAccount;

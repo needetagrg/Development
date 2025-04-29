@@ -18,7 +18,7 @@ const Menu = () => {
       <ul className="mt-3 flex flex-col items-start pl-3">
         <li className="mt-2 flex items-center text-base text-black cursor-pointer transition-colors duration-200 hover:bg-gray-200 p-2 rounded">
           <FaHome className="mr-3 text-black" />
-          <Link to="/home">Home</Link>
+          <Link to="/">Home</Link>
         </li>
 
         <li className="mt-2 flex items-center text-base text-black cursor-pointer transition-colors duration-200 hover:bg-gray-200 p-2 rounded">

@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { clearCart } from '../redux/cartRedux';
 
 const OrderSuccess = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const orderId = searchParams.get('orderId');
+
+  const dispatch = useDispatch(); // Correctly get the dispatch function
+
+  useEffect(() => {
+    dispatch(clearCart()); // Call the clearCart action creator
+  }, [dispatch]); // Include dispatch in the dependency array
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-green-100">

@@ -88,12 +88,12 @@ const getAllProducts = asyncHandler(async (req, res) => {
 const ratingProduct = asyncHandler(async (req, res) => {
   const { star, name, comment, postedBy } = req.body;
 
-  console.log(star, name, comment, postedBy)
-  console.log(req.params.id)
+  console.log("rating details: " , star, name, comment, postedBy)
+  console.log("Product ID: " , req.params.id)
 
 
   if (star) {
-    await Product.findByIdAndUpdate(
+    const postRating = await Product.findByIdAndUpdate(
       req.params.id,
 
       {
@@ -103,9 +103,11 @@ const ratingProduct = asyncHandler(async (req, res) => {
         new: true 
       }
     );
-    res.status(201).json("Product rating added successfully");
+    res.status(201).json(postRating);
+    console.log("rating added");
   } else {
     res.status(400);
+    console.log("rating not added");
     throw new Error("Product rating not added");
   }
 });

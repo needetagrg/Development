@@ -53,7 +53,7 @@ const Cart = () => {
 
       if (res.data && res.data.formData) {
         const formData = res.data.formData;
-        const eSewaUrl = "https://rc-epay.esewa.com.np/api/epay/main/v2/form"; // Production URL for Epay
+        const eSewaUrl = "https://rc-epay.esewa.com.np/api/epay/main/v2/form";
 
         // Create a dynamic form
         const form = document.createElement("form");
